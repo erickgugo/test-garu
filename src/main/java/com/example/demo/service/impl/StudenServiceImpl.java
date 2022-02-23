@@ -1,9 +1,12 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.Course;
 import com.example.demo.entity.Student;
 import com.example.demo.exception.DemoException;
+import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.StudentRepository;
 import com.example.demo.service.StudentService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +16,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Data
 public class StudenServiceImpl implements StudentService {
+
+    private final CourseRepository courseRepository;
+
+    private final StudentRepository studentRepository;
+
     @Autowired
-    private StudentRepository studentRepository;
+    public StudenServiceImpl(final CourseRepository courseRepository, final StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+        this.courseRepository = courseRepository;
+    }
 
     @Override
     public Student create(Student student) throws DemoException {
@@ -75,10 +87,12 @@ public class StudenServiceImpl implements StudentService {
 
     @Override
     public List<Student> findCourseCode(String code) throws DemoException {
-        List<Student> list;
+        Optional<Course> course = courseRepository.findById(code);
+        if (!course.isPresent()) {
+            throw new EntityNotFoundException(code + " - not exists");
+        }
         try {
-            list = studentRepository.findCourseCode(code);
-            return list;
+            return studentRepository.findCourseCode(code);
         } catch (Exception e) {
             throw new DemoException(e);
         }

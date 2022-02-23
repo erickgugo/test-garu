@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Student;
+import com.example.demo.exception.DemoException;
 import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
 
     @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
+
+    public StudentController(final StudentService studentService) {
+        this.studentService = studentService;
+    }
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Student student) {
